@@ -84,6 +84,14 @@
             font-size: 1.5rem;
             margin-top: 20px;
         }
+        .stats{
+            position: absolute;
+            bottom: 0%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -95,11 +103,11 @@
             <div class="moon-mask mask-left"></div>
             <div class="moon-mask mask-center"></div>
             <div class="moon-mask mask-right"></div>
+            <p class="stats">14.03 16:08</p>
             <div class="mask-bottom"></div>
         </div>
     </div>
     <p id="moon-phase">Fetching...</p>
-
     <script>
         async function fetchMoonPhase() {
             const apiUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://api.viewbits.com/v1/moonphase?location=Bern");
@@ -116,8 +124,10 @@
                 
                 if (todayMoonData) {
                     const illumination = parseFloat(todayMoonData.illumination.replace('%', '')); // Convert to number
-                    const rotationAngle = (illumination / 100) * 180; // Calculate rotation angle
+                    let rotationAngle = (illumination / 100) * 180; // Calculate rotation angle
 
+                    const hours = new Date().getHours();
+                    rotationAngle += hours * 0.4; // Add a small offset based on the current hour
                     // Update UI
                     document.getElementById("moon-phase").textContent = `Moon Phase: ${todayMoonData.phase}, Illumination: ${illumination}%`;
                     document.getElementById("moon").style.transform = `translateX(-50%) rotate(${rotationAngle}deg)`;
@@ -131,7 +141,21 @@
             }
         }
 
+        function setStats(){
+            const date = new Date();
+            const day = date.getDate();
+            const dayWithZero = day < 10 ? `0${day}` : day;
+            const month = date.getMonth() + 1;
+            const monthWithZero = month < 10 ? `0${month}` : month;
+            const hours = date.getHours();
+            const hoursWithZero = hours < 10 ? `0${hours}` : hours;
+            const minutes = date.getMinutes();
+            const minutesWithZero = minutes < 10 ? `0${minutes}` : minutes;
+            document.querySelector('.stats').textContent = `${dayWithZero}.${monthWithZero} ${hoursWithZero}:${minutesWithZero}`;
+        }
+
         fetchMoonPhase();
+        setStats();
     </script>
 
 </body>
