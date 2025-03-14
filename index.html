@@ -103,12 +103,12 @@
 
     <script>
         async function fetchMoonPhase() {
-            const apiUrl = "https://corsproxy.io/?" + encodeURIComponent("https://api.viewbits.com/v1/moonphase?location=Bern");
+            const apiUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://api.viewbits.com/v1/moonphase?location=Bern");
 
             try {
                 let response = await fetch(apiUrl);
                 let data = await response.json();
-
+                data = JSON.parse(data.contents);
                 // Get today's date in YYYY-MM-DD format
                 const todayStr = new Date().toISOString().split('T')[0];
 
