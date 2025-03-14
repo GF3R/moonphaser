@@ -19,16 +19,15 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            flex-direction: column;
         }
         .moon-phase-dial {
             position: relative;
             width: 60vw; /* Uses 60% of the screen width */
             height: 30vw; /* Aspect ratio of a classic moon phase watch */
-            max-width: 30em;
-            max-height: 30em;
+            max-width: 500px;
+            max-height: 250px;
             background-color: #222;
-            border-radius: 50%;
+            border-radius: 50% 50% 0 0;
             overflow: hidden;
             border: 5px solid #555;
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
@@ -37,40 +36,46 @@
             position: absolute;
             width: 30vw; /* Scales dynamically */
             height: 30vw;
-            max-width: 16em;
-            max-height: 16em;
+            max-width: 180px;
+            max-height: 180px;
             background-color: #222;
             border-radius: 50%;
-            top: 30%;
+            top: 50%;
             z-index: 2;
         }
         .mask-bottom {
             position: absolute;
             width: 30vw; /* Scales dynamically */
             height: 30vw;
-            max-width: 55em;
-            max-height: 25em;
+            max-width: 180px;
+            max-height: 50px;
             background-color: #222;
-            top: 50%;
-            left: 0%;
+            top: 80%;
+            left: 33%;
             z-index: 2;
         }
         .mask-left {
-            left: -1%;
+            left: 10%;
         }
         .mask-right {
-            right: -1%;
+            right: 10%;
         }
-
+        .mask-center {
+            left: 41%;
+            top: 65%;
+            max-height: 90px;
+            max-width: 90px;
+        }
         .moon {
             position: absolute;
-            width: 30vw; /* Scales dynamically */
-            height: 30vw;
-            max-width: 30em;
-            max-height: 30em;
+            width: 28vw;
+            height: 28vw;
+            max-width: 300px;
+            max-height: 300px;
             background: url("moonphase.jpg") no-repeat center;
             background-size: cover;
             border-radius: 50%;
+            top: 15%;
             left: 50%;
             transform: translateX(-50%) rotate(0deg);
             transition: transform 2s ease-in-out;
@@ -78,92 +83,6 @@
         #moon-phase {
             font-size: 1.5rem;
             margin-top: 20px;
-        }
-        
-        /* Date display styles */
-        .date-display {
-            position: absolute;
-            width: 12vw;
-            height: 12vw;
-            max-width: 30%;
-            max-height: 30%;
-            border-radius: 50%;
-            top: 65%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            z-index: 10;
-        }
-    
-        
-        #current-date {
-            font-family: "Times New Roman", serif;
-            font-size: 6rem;
-            font-weight: bold;
-            color: #ddd;
-        }
-
-
-        .dial-container {
-            position: absolute;
-            width: 60vw; /* Scales dynamically */
-            height: 30vw;
-            max-width: 30em;
-            max-height: 30em;
-            align-items: center;
-            flex-direction: column;
-            z-index: 100;
-            top: -5px;
-        }
-        
-        .dial {
-            position: absolute;
-            width: 30vw; /* Scales dynamically */
-            height: 30vw;
-            max-width: 30em;
-            max-height: 30em;
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .indicator {
-            position: absolute;
-            width: 3px;
-            height: 10vw;
-            background-color: #252D32;
-            transform-origin: bottom center;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -100%) rotate(0deg);
-            transition: transform 2s ease-in-out;
-        }
-        
-        .indicator:after {
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #252D32;
-            top: 0;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-         
-        .dial-center {
-            position: absolute;
-            width: 5%;
-            height: 5%;
-            border-radius: 50%;
-            background-color: #252D32;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
     </style>
 </head>
@@ -178,14 +97,6 @@
             <div class="moon-mask mask-right"></div>
             <div class="mask-bottom"></div>
         </div>
-        
-        <!-- Added date display -->
-        <!-- <div class="dial-container" id="dial">
-            <div class="dial">
-                <div class="indicator" id="dayIndicator"></div>
-                <div class="dial-center"></div>
-            </div>
-        </div> -->
     </div>
     <p id="moon-phase">Fetching...</p>
 
@@ -205,11 +116,7 @@
                 
                 if (todayMoonData) {
                     const illumination = parseFloat(todayMoonData.illumination.replace('%', '')); // Convert to number
-                    let rotationAngle = (illumination / 100) * 180; // Calculate rotation angle
-
-                    // add hours of day to rotation angle
-                    const hours = new Date().getHours();
-                    rotationAngle = rotationAngle + hours * 0.4;
+                    const rotationAngle = (illumination / 100) * 180; // Calculate rotation angle
 
                     // Update UI
                     document.getElementById("moon-phase").textContent = `Moon Phase: ${todayMoonData.phase}, Illumination: ${illumination}%`;
@@ -224,27 +131,7 @@
             }
         }
 
-        function animateDial() {
-            // First set the indicator to starting position (0 degrees)
-            const indicator = document.getElementById('dayIndicator');
-            indicator.style.transform = `translate(-50%, -100%) rotate(0deg)`;
-            
-            // Get the current day
-            const now = new Date();
-            const currentDay = now.getDate();
-            
-            // After a short delay, animate to the correct position
-            setTimeout(() => {
-                const currentDayAngle = (currentDay - 1) * (360 / 31);
-                indicator.style.transform = `translate(-50%, -100%) rotate(${currentDayAngle}deg)`;
-            }, 500);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize both animations
-            // animateDial();
-            fetchMoonPhase();
-        });
+        fetchMoonPhase();
     </script>
 
 </body>
