@@ -81,7 +81,7 @@
             transition: transform 2s ease-in-out;
         }
         #moon-phase {
-            font-size: 1.5rem;
+            font-size: 0.8rem;
             margin-top: 20px;
         }
         .stats{
@@ -89,7 +89,7 @@
             bottom: 0%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             z-index: 1000;
         }
     </style>
@@ -109,6 +109,11 @@
     </div>
     <p id="moon-phase">Fetching...</p>
     <script>
+
+        function setRotation(rotation) {
+            document.getElementById("moon").style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+        }
+
         async function fetchMoonPhase() {
             const apiUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent("https://api.viewbits.com/v1/moonphase?location=Bern");
 
@@ -124,13 +129,18 @@
                 
                 if (todayMoonData) {
                     const illumination = parseFloat(todayMoonData.illumination.replace('%', '')); // Convert to number
-                    let rotationAngle = (illumination / 100) * 180; // Calculate rotation angle
-
+                    let rotationAngle = (illumination / 100) * 90; // Calculate rotation angle
+                    if (!isLeftLeaning(todayMoonData.phase)) {
+                        rotationAngle = 90 - rotationAngle; // Reverse rotation for right-leaning moon phases
+                    }else {
+                        rotationAngle = rotationAngle - 90;
+                    }
+                    console.log(rotationAngle);
                     const hours = new Date().getHours();
-                    rotationAngle += hours * 0.4; // Add a small offset based on the current hour
+                    rotationAngle += hours * 0.2; // Add a small offset based on the current hour
                     // Update UI
                     document.getElementById("moon-phase").textContent = `Moon Phase: ${todayMoonData.phase}, Illumination: ${illumination}%`;
-                    document.getElementById("moon").style.transform = `translateX(-50%) rotate(${rotationAngle}deg)`;
+                    setRotation(rotationAngle);
                 } else {
                     document.getElementById("moon-phase").textContent = "Moon phase data unavailable for today.";
                 }
@@ -139,6 +149,10 @@
                 console.error("Error fetching moon phase:", error);
                 document.getElementById("moon-phase").textContent = "Failed to fetch moon phase.";
             }
+        }
+
+        function isLeftLeaning(moonPhase){
+            return moonPhase === "New Moon" || moonPhase === "Waxing Crescent" || moonPhase === "First Quarter" || moonPhase === "Waxing Gibbous";
         }
 
         function setStats(){
